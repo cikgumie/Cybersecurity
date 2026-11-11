@@ -1191,8 +1191,81 @@ function updateActiveNav() {
   navLinks.forEach(a => a.classList.toggle('active', !!current && a === current.a));
 }
 
-window.addEventListener('scroll', updateActiveNav, { passive: true });
-window.addEventListener('resize', updateActiveNav);
-updateActiveNav();
+/* =========================================================
+   MOTION SEMASA SKROL (laman web sahaja, bukan slaid)
+   - Elemen muncul perlahan apabila masuk ke skrin, berturutan.
+   - Bar kemajuan skrol di bawah header & bayang header.
+   - Dimatikan jika pengguna memilih "kurangkan gerakan".
+   ========================================================= */
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+if (!reduceMotion && 'IntersectionObserver' in window) {
+  const REVEAL = [
+    ['.hero-content > *', 'up'],
+    ['.hero-visual', 'zoom'],
+    ['.section-header', 'up'],
+    ['.pillar-card', 'up'],
+    ['.pillar-banner', 'left'],
+    ['.site-pillar-section > .interactive-box', 'up'],
+    ['.cards-2col > .interactive-box', 'up'],
+    ['.quiz-section-wrap', 'zoom'],
+    ['.pledge li', 'left'],
+    ['#pledge-done', 'zoom'],
+    ['.contact-card', 'up'],
+    ['.footer-container > *', 'up'],
+  ];
+  const items = [];
+  REVEAL.forEach(([sel, kind]) => {
+    $$(sel).forEach(el => {
+      if (el.closest('#deck') || el.dataset.reveal) return;
+      el.dataset.reveal = kind;
+      items.push(el);
+    });
+  });
+  // Kesan berturutan untuk elemen bersebelahan (cth. kad pilar satu demi satu)
+  items.forEach(el => {
+    const sibs = [...el.parentElement.children].filter(c => c.dataset.reveal);
+    el.style.setProperty('--reveal-delay', Math.min(sibs.indexOf(el), 6) * 90 + 'ms');
+  });
+  document.documentElement.classList.add('motion-ready');
+
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (!en.isIntersecting) return;
+      const el = en.target;
+      el.classList.add('is-visible');
+      io.unobserve(el);
+      // Selepas animasi, pulangkan gaya asal (supaya kesan hover kad kekal)
+      setTimeout(() => {
+        el.removeAttribute('data-reveal');
+        el.classList.remove('is-visible');
+        el.style.removeProperty('--reveal-delay');
+      }, 1400);
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0 });
+  items.forEach(el => io.observe(el));
+}
+
+// Bar kemajuan skrol (dalam header)
+let siteProgress = null;
+if (header) {
+  siteProgress = document.createElement('div');
+  siteProgress.className = 'site-progress';
+  siteProgress.innerHTML = '<span></span>';
+  header.appendChild(siteProgress);
+}
+
+function onSiteScroll() {
+  updateActiveNav();
+  if (header) header.classList.toggle('scrolled', window.scrollY > 8);
+  if (siteProgress) {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    siteProgress.firstChild.style.transform = `scaleX(${max > 0 ? Math.min(1, window.scrollY / max) : 0})`;
+  }
+}
+
+window.addEventListener('scroll', onSiteScroll, { passive: true });
+window.addEventListener('resize', onSiteScroll);
+onSiteScroll();
 
 })();
