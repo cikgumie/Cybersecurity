@@ -1173,9 +1173,12 @@ if (navToggle) {
 navLinks.forEach(a => a.addEventListener('click', () => setNavOpen(false)));
 
 // Tandakan pautan bagi bahagian yang sedang dibaca
+// data-spy: senarai id bahagian yang dikira milik pautan itu (cth. Modul = peta + 5 pilar)
 const spyTargets = navLinks
-  .map(a => ({ a, sec: document.querySelector(a.getAttribute('href')) }))
-  .filter(x => x.sec);
+  .flatMap(a => (a.dataset.spy || a.getAttribute('href').slice(1)).split(/\s+/)
+    .map(id => ({ a, sec: document.getElementById(id) })))
+  .filter(x => x.sec)
+  .sort((x, y) => x.sec.getBoundingClientRect().top - y.sec.getBoundingClientRect().top);
 
 function updateActiveNav() {
   const line = (header ? header.offsetHeight : 0) + window.innerHeight * 0.3;
@@ -1188,12 +1191,8 @@ function updateActiveNav() {
   navLinks.forEach(a => a.classList.toggle('active', !!current && a === current.a));
 }
 
-let spyTick = false;
-window.addEventListener('scroll', () => {
-  if (spyTick) return;
-  spyTick = true;
-  requestAnimationFrame(() => { updateActiveNav(); spyTick = false; });
-}, { passive: true });
+window.addEventListener('scroll', updateActiveNav, { passive: true });
+window.addEventListener('resize', updateActiveNav);
 updateActiveNav();
 
 })();

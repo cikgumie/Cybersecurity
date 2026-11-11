@@ -260,8 +260,8 @@ img {
 .nav-link {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
-  padding: 0.4rem 0.85rem 0.4rem 0.4rem;
+  gap: 0.5rem;
+  padding: 0.4rem 1.1rem 0.4rem 0.4rem;
   border-radius: var(--r-full);
   font-size: 0.86rem;
   font-weight: 700;
@@ -277,7 +277,7 @@ img {
   display: grid;
   place-items: center;
   font-style: normal;
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   font-weight: 800;
   color: var(--c);
   background: color-mix(in srgb, var(--c) 15%, transparent);
@@ -292,7 +292,8 @@ img {
   box-shadow: var(--shadow-sm);
 }
 
-.nav-link.active i { background: var(--c); color: #fff; }
+.nav-link.active i { background: color-mix(in srgb, var(--c) 28%, transparent); }
+.nav-link.active { color: var(--c); }
 
 .nav-sep {
   width: 1px;
@@ -374,8 +375,8 @@ img {
 
 .nav-toggle { display: none; }
 
-/* Skrin sederhana: navigasi masuk ke menu lungsur */
-@media (max-width: 1180px) {
+/* Skrin kecil (telefon): navigasi masuk ke menu lungsur */
+@media (max-width: 640px) {
   .header-actions { margin-left: auto; }
   .nav-toggle { display: grid; }
   .site-nav {
