@@ -91,11 +91,15 @@
         </div>
       </div>
       
-      <!-- Visual Hero: Maskot Wira Siber -->
+      <!-- Visual Hero: Adegan 3D (hero3d.js). Gambar maskot = sandaran jika 3D tidak dapat dimuatkan -->
       <div class="hero-visual">
         <div class="hero-img-wrap">
           <img src="assets/hero-mascot.jpg" alt="Mascot Wira Siber Tenang &amp; Mesra">
         </div>
+        <div class="hero-3d" id="hero3d" aria-hidden="true">
+          <div class="hero-3d-tip"></div>
+        </div>
+        <p class="hero-3d-hint">✨ Ketik orb berwarna untuk terokai setiap pilar</p>
         <div class="floating-badge fb-1">
           <span>🛡️</span> Benteng 2FA Aktif
         </div>
@@ -1239,5 +1243,14 @@
 
 <canvas id="confetti"></canvas>
 <script src="app.js"></script>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module" src="hero3d.js"></script>
 </body>
 </html>
